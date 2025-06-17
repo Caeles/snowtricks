@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .background-image {
+        background-image: url('/images/homepage.jpeg');
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        position: relative;
+        overflow: hidden;
+    }
+    .background-image h1 {
+        font-size: 3.5rem;
+    }
+    .arrow_down {
+        margin-top: 100px;
+        color: white;
+        font-size: 40px;
+        
+    }
+.image_rectangulaire {
+  position: relative;
+  width: 100%;            
+  height: 200px;    
+  overflow: hidden;        
+}
+
+.image_rectangulaire_img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      
+  object-position: center center;
+}
+
+</style>
+
+<div class="background-image">
+    <h1 class="display-2 text-center">Bienvenue dans notre communauté!</h1>
+    <a href="#contenu" class="arrow_down">
+        <i class='bx bx-chevron-down'></i>
+    </a>
+</div>
+
+<div id="contenu" class="container py-4">
+
+<?php
+$title= "Figures snowtricks";
+$pdo = new PDO('mysql:dbname=snowtricks;host=127.0.0.1', 'root', '',[
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+]);
+$tricks = $pdo->query('SELECT t.*, i.filename AS image_filename FROM trick t
+LEFT JOIN (SELECT * FROM image WHERE (trick_id, id) IN (
+    SELECT trick_id, MIN(id) FROM image GROUP BY trick_id
+)) i ON t.id = i.trick_id
+ORDER BY t.createdAt DESC LIMIT 9');
+$tricks = $tricks->fetchAll(PDO::FETCH_OBJ);
+?>
+
+<h1 class="text-center  mb-4">Figures snowtricks</h1>
+<div class="container">
+    <div class="row">
+        <?php foreach ($tricks as $trick): ?>
+            <div class="col-md-4 mb-4">           
+            <?php require 'card.php'; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+</div><!-- fin du contenu --><style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .background-image {
+        background-image: url('/images/homepage.jpeg');
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        position: relative;
+        overflow: hidden;
+    }
+    .background-image h1 {
+        font-size: 3.5rem;
+    }
+    .arrow_down {
+        margin-top: 100px;
+        color: white;
+        font-size: 40px;
+        
+    }
+.image_rectangulaire {
+  position: relative;
+  width: 100%;            
+  height: 200px;    
+  overflow: hidden;        
+}
+
+.image_rectangulaire_img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      
+  object-position: center center;
+}
+
+</style>
+
+<div class="background-image">
+    <h1 class="display-2 text-center">Bienvenue dans notre communauté!</h1>
+    <a href="#contenu" class="arrow_down">
+        <i class='bx bx-chevron-down'></i>
+    </a>
+</div>
+
+<div id="contenu" class="container py-4">
+
+<?php
+$title= "Figures snowtricks";
+$pdo = new PDO('mysql:dbname=snowtricks;host=127.0.0.1', 'root', '',[
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+]);
+$tricks = $pdo->query('SELECT t.*, i.filename AS image_filename FROM trick t
+LEFT JOIN (SELECT * FROM image WHERE (trick_id, id) IN (
+    SELECT trick_id, MIN(id) FROM image GROUP BY trick_id
+)) i ON t.id = i.trick_id
+ORDER BY t.createdAt DESC LIMIT 9');
+$tricks = $tricks->fetchAll(PDO::FETCH_OBJ);
+?>
+
+<h1 class="text-center  mb-4">Figures snowtricks</h1>
+<div class="container">
+    <div class="row">
+        <?php foreach ($tricks as $trick): ?>
+            <div class="col-md-4 mb-4">           
+            <?php require 'card.php'; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+</div><!-- fin du contenu -->
+{% endblock %}
