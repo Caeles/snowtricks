@@ -13,3 +13,11 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+            handler_id: session.handler.native_file
+            cookie_secure: auto
+            cookie_httponly: true
+            cookie_samesite: Lax
+            cookie_lifetime: 604800
+            gc_maxlifetime: 604800
+            sid_bits_per_character: 5
+            save_path: '%kernel.project_dir%/var/sessions'

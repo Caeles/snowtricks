@@ -1,0 +1,194 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ trick.name }} - Snowtricks{% endblock %}
+
+{% block body %}
+<section class="container mt-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h1 class="h3 mb-0">{{ trick.title }}</h1>
+                    <div>
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') and app.user.id == trick.author.id %}
+                            <a href="{{ path('app_trick_edit', {'slug': trick.slug}) }}" class="btn btn-sm btn-outline-primary me-2">Modifier</a>
+                            <a href="{{ path('app_trick_delete', {'slug': trick.slug}) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer?')">Supprimer</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if trick.images is not empty %}
+                        <div class="row mb-4">
+                            <div class="col-md-8 offset-md-2">
+                                <div id="trickCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        {% for image in trick.images %}
+                                            <div class="carousel-item {{ loop.first ? 'active' : '' }}">
+                                                <img src="{{ asset('images/tricks/' ~ image.filename) }}" class="d-block w-100" alt="{{ image.alt_text|default('Image du trick') }}">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if trick.images|length > 1 %}
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#trickCarousel" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Précédent</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#trickCarousel" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Suivant</span>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center mb-4">
+                            <img src="{{ asset('images/no-image.jpg') }}" alt="Image par défaut" class="img-fluid" style="max-height: 400px;">
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h5>Catégorie</h5>
+                            <p>{{ trick.category.name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h5>Créé par</h5>
+                            <p>{{ trick.author.username }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <h5>Description</h5>
+                            <p>{{ trick.description }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if trick.videos is not empty %}
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <h5>Vidéos</h5>
+                                <div class="row">
+                                    {% for video in trick.videos %}
+                                        <div class="col-md-6 mb-3">
+                                            <div class="ratio ratio-16x9">
+                                                <iframe src="{{ video.url }}" title="Vidéo" allowfullscreen></iframe>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-muted">
+                    <div class="row">
+                        <div class="col-md-6">
+                            Créé le {{ trick.createdAt|date('d/m/Y à H:i') }}
+                        </div>
+                        <div class="col-md-6 text-end">
+                            Mis à jour le {{ trick.updatedAt|date('d/m/Y à H:i') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="d-grid gap-2">
+                <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h4 mb-0">Discussion ({{ totalComments }})</h2>
+                </div>
+                <div class="card-body">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <div class="comment-form mb-4">
+                            {{ form_start(commentForm) }}
+                            {{ form_row(commentForm.content, {'attr': {'class': 'form-control'}, 'label': 'Votre message'}) }}
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="submit" class="btn btn-primary">Publier</button>
+                            </div>
+                            {{ form_end(commentForm) }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-4">
+                            <a href="{{ path('login') }}">Connectez-vous</a> pour participer à la discussion.
+                        </div>
+                    {% endif %}
+
+                    {% if comments|length > 0 %}
+                        <h3 class="h5 mb-4">{{ totalComments }} commentaire{% if totalComments > 1 %}s{% endif %}</h3>
+                        {% for comment in comments %}
+                            <div class="comment mb-4 p-3 border-bottom">
+                                <div class="d-flex">
+                                    <div class="comment-author me-3">
+                                        {% if comment.author.avatar %}
+                                            <img src="{{ asset('images/' ~ comment.author.avatar) }}" alt="{{ comment.author.username }}" class="rounded-circle" width="50" height="50">
+                                        {% else %}
+                                            <div class="avatar-placeholder rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width:50px;height:50px;color:white;">
+                                                {{ comment.author.username|first }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="comment-content flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h4 class="h6 mb-0">{{ comment.author.username }}</h4>
+                                            <small class="text-muted">{{ comment.createdAt|date('d/m/Y H:i') }}</small>
+                                        </div>
+                                        <p>{{ comment.content|nl2br }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        {% if totalPages > 1 %}
+                            <nav aria-label="Navigation commentaires">
+                                <ul class="pagination justify-content-center">
+                                    {% if currentPage > 1 %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_trick_show', {'slug': trick.slug, 'page': currentPage - 1}) }}">Précédent</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Précédent</span>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for i in 1..totalPages %}
+                                        <li class="page-item {{ i == currentPage ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ path('app_trick_show', {'slug': trick.slug, 'page': i}) }}">{{ i }}</a>
+                                        </li>
+                                    {% endfor %}
+
+                                    {% if currentPage < totalPages %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_trick_show', {'slug': trick.slug, 'page': currentPage + 1}) }}">Suivant</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Suivant</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-light text-center">
+                            <p>Aucun commentaire pour le moment. Soyez le premier à partager votre avis !</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

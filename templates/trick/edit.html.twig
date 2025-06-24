@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ trick.title }} - Snowtricks{% endblock %}
+
+{% block body %}
+<section class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h1 class="h3 mb-0">Modifier le trick</h1>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_row(form.title) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_row(form.category) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_row(form.description) }}
+                        </div>
+
+                        {% if trick.images|length > 0 %}
+                        <div class="mb-3">
+                            <h5>Images existantes</h5>
+                            <div class="row g-3">
+                                {% for image in trick.images %}
+                                <div class="col-md-4 col-6">
+                                    <div class="card h-100">
+                                        <img src="/images/tricks/{{ image.filename }}" class="card-img-top" alt="{{ image.altText }}" style="height: 150px; object-fit: cover;">
+                                        <div class="card-body">
+                                            <p class="card-text small text-muted">{{ image.filename }}</p>
+                                            <div class="text-end">
+                                                <form method="post" action="{{ path('app_image_delete', {'id': image.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette image ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ image.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            {{ form_row(form.imageFile) }}
+                            <div class="form-text">Télécharger une nouvelle image</div>
+                        </div>
+
+                        {% if trick.videos|length > 0 %}
+                        <div class="mb-3">
+                            <h5>Vidéos existantes</h5>
+                            <div class="row g-3">
+                                {% for video in trick.videos %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="ratio ratio-16x9 mb-3">
+                                                <iframe src="{{ video.url|replace({'watch?v=': 'embed/'}) }}" allowfullscreen></iframe>
+                                            </div>
+                                            <p class="card-text small text-truncate text-muted">{{ video.url }}</p>
+                                            <div class="text-end">
+                                                <form method="post" action="{{ path('app_video_delete', {'id': video.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette vidéo ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ video.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            {{ form_row(form.videoUrl) }}
+                            <div class="form-text">Ajouter une nouvelle vidéo (YouTube, Vimeo, etc.)</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_trick_show', {'id': trick.id}) }}" class="btn btn-outline-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

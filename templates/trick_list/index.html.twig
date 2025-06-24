@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} - Snowtricks{% endblock %}
+
+{% block body %}
+<style>
+    .image_rectangulaire {
+        position: relative;
+        width: 100%;            
+        height: 200px;    
+        overflow: hidden;        
+    }
+
+    .image_rectangulaire_img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;      
+        object-position: center center;
+    }
+    
+    .header-banner {
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+</style>
+
+<div class="header-banner">
+    <div class="container">
+        <h1 class="display-4 text-center">{{ title }}</h1>
+        <p class="lead text-center">Découvrez toutes les figures de snowboard</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        {% if tricks is defined and tricks|length > 0 %}
+            {% for trick in tricks %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="image_rectangulaire">
+                            {% if trick.imageFilename is defined and trick.imageFilename %}
+                                <img src="{{ asset('images/tricks/' ~ trick.imageFilename) }}" class="image_rectangulaire_img" alt="{{ trick.name }}">
+                            {% else %}
+                                <img src="{{ asset('images/no-image.jpg') }}" class="image_rectangulaire_img" alt="Image par défaut">
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ trick.name|default('Sans nom') }}</h5>
+                            {% if trick.category is defined and trick.category %}
+                                <p class="card-text"><small class="text-muted">Catégorie: {{ trick.category.name }}</small></p>
+                            {% endif %}
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <a href="{{ path('app_trick_show', {'slug': trick.slug}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                                <div>
+                                    {% if is_granted('IS_AUTHENTICATED_FULLY') and app.user.id == trick.author.id %}
+                                        <a href="{{ path('app_trick_edit', {'slug': trick.slug}) }}" class="text-primary me-2"><i class='bx bx-edit'></i></a>
+                                        <a href="{{ path('app_trick_delete', {'slug': trick.slug}) }}" class="text-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer?')"><i class='bx bx-trash'></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p>Aucune figure disponible pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

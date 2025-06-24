@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bienvenue sur Snowtricks</title>
+</head>
+<body>
+{% apply inline_css (source('@css/email.css')) %}
+    <h1>Bienvenue sur Snowtricks</h1>
+    <p>Nous sommes ravis de vous avoir sur Snowtricks !</p>
+    <p>Snowtricks est une plateforme social autour des figures de tricks.
+    N'hésitez pas à ajouter les votres!</p>
+
+    <img src="{{email.image('@images/homepage.jpeg')}}">
+{% endapply %}
+</body>
+</html>
