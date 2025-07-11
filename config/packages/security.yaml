@@ -23,8 +23,7 @@ security:
                 password_parameter: _password
                 default_target_path: app_home
                 use_referer: true
-                # Désactivation temporaire du CSRF pour débogage
-                enable_csrf: false
+                enable_csrf: true
             logout:
                 path: logout
 

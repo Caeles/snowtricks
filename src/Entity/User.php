@@ -51,8 +51,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: "author", targetEntity: "App\Entity\Comment")]
     private Collection $comments;
 
-
-
     public function __construct()
     {
         $this->tricks = new ArrayCollection();
@@ -219,7 +217,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return null;
     }
     
-   
-
-
-}
+    public function eraseCredentials(): void
+    {
+        
+}}

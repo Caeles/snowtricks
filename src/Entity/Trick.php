@@ -244,8 +244,5 @@ class Trick
         return $this;
     }
     
-    public function getName(): ?string
-    {
-        return $this->title;
-    }
+   
 }
